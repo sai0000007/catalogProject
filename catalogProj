@@ -1,0 +1,45 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <map>
+#include <cmath>
+long long decodeValue(std::string value, int base) {
+    return std::stoll(value, nullptr, base); 
+}
+double lagrangeInterpolation(std::vector<std::pair<int, long long>>& points, int k) {
+    double constantTerm = 0.0;
+    for (int i = 0; i < k; i++) {
+        double term = points[i].second;
+        for (int j = 0; j < k; j++) {
+            if (i != j) {
+                term *= (0 - points[j].first) / (double)(points[i].first - points[j].first);
+            }
+        }
+        constantTerm += term;
+    }
+
+    return constantTerm;
+}
+int main() {
+    std::ifstream inputFile("input.json");
+        int n = 4, k = 3;
+    std::map<int, std::pair<int, std::string>> points = {
+        {1, {10, "4"}}, 
+        {2, {2, "111"}}, 
+        {3, {10, "12"}}, 
+        {6, {4, "213"}}
+    };
+    std::vector<std::pair<int, long long>> decodedPoints;
+    for (const auto& p : points) {
+        int x = p.first;
+        int base = p.second.first;
+        std::string encodedValue = p.second.second;
+        long long y = decodeValue(encodedValue, base);
+        decodedPoints.push_back({x, y});
+    }
+
+    double secret = lagrangeInterpolation(decodedPoints, k);   
+    std::cout << "The secret (constant term) is: " << secret << std::endl;
+
+    return 0;
+}
